@@ -13,8 +13,8 @@ export const MovieCard = ({ image, title, onMovieSelect }: TMovieCardProps) => {
     >
       <div
         style={{ backgroundImage: `url(${image})` }}
-        className={`h-full w-full rounded-t-md bg-cover`}
-      />
+        className={`h-full bg-gray-700 w-full rounded-t-md bg-cover`}
+      ></div>
       <div className='h-full p-4'>
         <h3>{title}</h3>
       </div>
