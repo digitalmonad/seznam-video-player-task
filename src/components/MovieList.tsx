@@ -1,38 +1,59 @@
 import { MovieCard } from '../components/MovieCard';
 import loaderGif from '../assets/loader.gif';
 import { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import { TMovie } from '../types';
+import debounce from 'lodash.debounce';
+
+const sortOptions: TSortOptions[] = ['asc', 'desc'];
+
+type TSortOptions = 'asc' | 'desc';
 
 export type TMovieListProps = {
-  movies: { image: string; title: string }[];
+  movies: TMovie[] | undefined;
   loading: boolean;
   error?: string;
   onMovieSelect: (id: string) => void;
+  sort?: TSortOptions;
 };
 
 export const MovieList = ({
   movies = [],
+  sort: defaultSort = 'asc',
   loading,
   error,
   onMovieSelect,
 }: TMovieListProps) => {
   const [searchTerm, setSearchTerm] = useState('');
-  let content;
+  const [sort, setSort] = useState<TSortOptions>(defaultSort);
 
   const filteredMovies = useMemo(() => {
-    if (movies) {
-      return movies.filter((movie) => {
-        return movie?.name
-          .toLowerCase()
-          .includes(searchTerm.toLocaleLowerCase());
-      });
-    } else {
-      return [];
-    }
+    return movies.filter((movie) => {
+      return movie?.name.toLowerCase().includes(searchTerm.toLocaleLowerCase());
+    });
   }, [movies, searchTerm]);
 
-  const handleSearch = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
+  const sortedMovies = useMemo(
+    () =>
+      filteredMovies.sort((a, b) =>
+        sort === 'asc'
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name)
+      ),
+    [filteredMovies, sort]
+  );
+
+  const handleSearch = useCallback(
+    debounce((e: ChangeEvent<HTMLInputElement>) => {
+      setSearchTerm(e.target.value);
+    }, 300),
+    []
+  );
+
+  const handleSort = useCallback(() => {
+    setSort((prev) => (prev === 'asc' ? 'desc' : 'asc'));
   }, []);
+
+  let content;
 
   if (loading) {
     content = (
@@ -63,14 +84,14 @@ export const MovieList = ({
   if (!loading && !error && filteredMovies.length > 0) {
     content = (
       <div className='overflow-scroll flex mb-4'>
-        <div className='grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-5 gap-4 gap-y-6 pt-4'>
-          {filteredMovies.map((item, index) => (
+        <div className='grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-5 gap-4 gap-y-16 pt-4'>
+          {sortedMovies.map((movie) => (
             <MovieCard
-              key={item.id}
-              image={item.iconUri}
-              title={item.name}
-              id={item.id}
-              onMovieSelect={() => onMovieSelect(item.id)}
+              key={movie.id}
+              image={movie.iconUri}
+              title={movie.name}
+              id={movie.id}
+              onMovieSelect={() => onMovieSelect(movie.id)}
             />
           ))}
         </div>
@@ -80,15 +101,28 @@ export const MovieList = ({
 
   return (
     <div className='flex flex-1'>
-      <div className='pt-4 flex flex-1 flex-col'>
-        <div className='flex items-center justify-between'>
+      <div className='flex flex-1 flex-col'>
+        <div className='flex items-center justify-between p-4'>
+          <div className='w-[25%]'>
+            {`Showing ${filteredMovies.length} of ${movies.length} movies`}
+          </div>
           <input
             className='bg-gray-800 p-2 rounded w-[50%] my-10'
             placeholder='Search movie...'
             type='text'
             onChange={handleSearch}
           />
-          <div>Movies count: {`${filteredMovies.length}`}</div>
+          <div className='flex items-center w-[25%] justify-end'>
+            Sort:
+            <select
+              className='bg-gray-800 p-2 rounded ml-2'
+              onChange={handleSort}
+            >
+              {sortOptions.map((option) => (
+                <option key={option}>{option}</option>
+              ))}
+            </select>
+          </div>
         </div>
         {content}
       </div>
