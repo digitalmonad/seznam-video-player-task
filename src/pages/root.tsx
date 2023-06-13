@@ -4,8 +4,6 @@ import VideoJSPlayerComponent from '../components/Player';
 import React from 'react';
 import { v4 as uuid } from 'uuid';
 export const Root = () => {
-  const [currentVideo, setCurrentVideo] = React.useState();
-
   const { isLoading, error, data } = useQuery({
     queryKey: ['videos'],
     queryFn: () =>
@@ -32,12 +30,6 @@ export const Root = () => {
     controls: true,
     responsive: true,
     fluid: true,
-    sources: [
-      {
-        src: 'https://storage.googleapis.com/shaka-demo-assets/bbb-dark-truths/dash.mpd',
-        // type: 'video/mp4',
-      },
-    ],
   };
 
   const handlePlayerReady = (player) => {
@@ -54,16 +46,16 @@ export const Root = () => {
   };
 
   return (
-    <div className='h-full flex flex-col relative'>
-      <div className='h-full'>
-        <div className='max-w-[940px] relative mx-auto p-4'>
+    <div className='h-full flex flex-col relative pt-4'>
+      <div className='h-[40%]'>
+        <div className='max-w-[650px] relative mx-auto'>
           <VideoJSPlayerComponent
             options={videoJsOptions}
             onReady={handlePlayerReady}
           />
         </div>
       </div>
-      <div className='h-full overflow-scroll flex'>
+      <div className='h-[60%] flex'>
         <div className='flex flex-1 container mx-auto'>
           <MovieList
             movies={data}

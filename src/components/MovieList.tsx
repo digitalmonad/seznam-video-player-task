@@ -1,5 +1,6 @@
 import { MovieCard } from '../components/MovieCard';
 import loaderGif from '../assets/loader.gif';
+import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 export type TMovieListProps = {
   movies: { image: string; title: string }[];
@@ -14,7 +15,25 @@ export const MovieList = ({
   error,
   onMovieSelect,
 }: TMovieListProps) => {
+  const [searchTerm, setSearchTerm] = useState('');
   let content;
+
+  const filteredMovies = useMemo(() => {
+    if (movies) {
+      console.log(movies);
+      return movies.filter((movie) => {
+        return movie?.name
+          .toLowerCase()
+          .includes(searchTerm.toLocaleLowerCase());
+      });
+    } else {
+      return [];
+    }
+  }, [movies, searchTerm]);
+
+  const handleSearch = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  }, []);
 
   if (loading) {
     content = (
@@ -36,16 +55,29 @@ export const MovieList = ({
 
   if (!loading && !error) {
     content = (
-      <div className='grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-5 gap-4 gap-y-6 pt-4'>
-        {movies.map((item, index) => (
-          <MovieCard
-            key={item.id}
-            image={item.iconUri}
-            title={item.name}
-            id={item.id}
-            onMovieSelect={() => onMovieSelect(item.id)}
+      <div className='pt-4 flex flex-1 flex-col'>
+        <div className='flex items-center justify-between'>
+          <input
+            className='bg-gray-800 p-2 rounded w-[20%] my-10'
+            placeholder='Search movie...'
+            type='text'
+            onChange={handleSearch}
           />
-        ))}
+          <div>Movies count: {`${filteredMovies.length}`}</div>
+        </div>
+        <div className='overflow-scroll flex mb-4'>
+          <div className='grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-5 gap-4 gap-y-6 pt-4'>
+            {filteredMovies.map((item, index) => (
+              <MovieCard
+                key={item.id}
+                image={item.iconUri}
+                title={item.name}
+                id={item.id}
+                onMovieSelect={() => onMovieSelect(item.id)}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
