@@ -2,19 +2,33 @@ import { useQuery } from '@tanstack/react-query';
 import { MovieList } from '../components/MovieList';
 import VideoJSPlayerComponent from '../components/Player';
 import React from 'react';
+import { v4 as uuid } from 'uuid';
 export const Root = () => {
+  const [currentVideo, setCurrentVideo] = React.useState();
+
   const { isLoading, error, data } = useQuery({
     queryKey: ['videos'],
     queryFn: () =>
-      fetch(import.meta.env.VITE_MOVIES_URI as string).then((res) =>
-        res.json()
-      ),
+      fetch(import.meta.env.VITE_MOVIES_URI as string)
+        .then((res) => res.json())
+        .then((movies) => movies.map((movie) => ({ ...movie, id: uuid() }))),
   });
 
   const playerRef = React.useRef(null);
 
+  const handleMovieSelect = (id) => {
+    const player = playerRef.current;
+    const video = data.filter((item) => item.id === id)?.[0];
+    player.src([
+      {
+        src: video.manifestUri,
+      },
+    ]);
+    player.play();
+  };
+
   const videoJsOptions = {
-    autoplay: true,
+    autoplay: false,
     controls: true,
     responsive: true,
     fluid: true,
@@ -39,8 +53,6 @@ export const Root = () => {
     });
   };
 
-  console.log(data);
-
   return (
     <div className='h-full flex flex-col relative'>
       <div className='h-full'>
@@ -57,6 +69,7 @@ export const Root = () => {
             movies={data}
             loading={isLoading}
             error={(error as any) && 'Something went wrong :('}
+            onMovieSelect={handleMovieSelect}
           />
         </div>
       </div>

@@ -5,9 +5,15 @@ export type TMovieListProps = {
   movies: { image: string; title: string }[];
   loading: boolean;
   error?: string;
+  onMovieSelect: (id: string) => void;
 };
 
-export const MovieList = ({ movies, loading, error }: TMovieListProps) => {
+export const MovieList = ({
+  movies,
+  loading,
+  error,
+  onMovieSelect,
+}: TMovieListProps) => {
   let content;
 
   if (loading) {
@@ -31,8 +37,14 @@ export const MovieList = ({ movies, loading, error }: TMovieListProps) => {
   if (!loading && !error) {
     content = (
       <div className='grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-5 gap-4 gap-y-6 pt-4'>
-        {movies.map((item) => (
-          <MovieCard image={item.iconUri} title={item.name} />
+        {movies.map((item, index) => (
+          <MovieCard
+            key={item.id}
+            image={item.iconUri}
+            title={item.name}
+            id={item.id}
+            onMovieSelect={() => onMovieSelect(item.id)}
+          />
         ))}
       </div>
     );

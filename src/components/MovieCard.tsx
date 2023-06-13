@@ -1,11 +1,16 @@
 export type TMovieCardProps = {
   image: string;
   title: string;
+  id: string;
+  onMovieSelect: () => void;
 };
 
-export const MovieCard = ({ image, title }: TMovieCardProps) => {
+export const MovieCard = ({ image, title, onMovieSelect }: TMovieCardProps) => {
   return (
-    <div className='card flex flex-col h-[300px] hover:-translate-y-1 transition hover:border-green-300 border border-transparent box-content cursor-pointer'>
+    <div
+      onClick={() => onMovieSelect()}
+      className='card flex flex-col h-[300px] hover:-translate-y-1 transition hover:border-green-300 border border-transparent box-content cursor-pointer'
+    >
       <div
         style={{ backgroundImage: `url(${image})` }}
         className={`h-full w-full rounded-t-md bg-cover`}

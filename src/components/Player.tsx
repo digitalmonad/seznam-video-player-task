@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
@@ -6,6 +7,9 @@ export const VideoJS = (props) => {
   const videoRef = React.useRef(null);
   const playerRef = React.useRef(null);
   const { options, onReady } = props;
+  //   const { data } = useQuery({
+  //     queryKey: ['videos'],
+  //   });
 
   React.useEffect(() => {
     // Make sure Video.js player is only initialized once
@@ -42,6 +46,10 @@ export const VideoJS = (props) => {
       }
     };
   }, [playerRef]);
+
+  React.useEffect(() => {
+    const player = playerRef.current;
+  }, []);
 
   return (
     <div data-vjs-player>
