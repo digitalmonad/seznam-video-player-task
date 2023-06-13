@@ -10,7 +10,7 @@ export type TMovieListProps = {
 };
 
 export const MovieList = ({
-  movies,
+  movies = [],
   loading,
   error,
   onMovieSelect,
@@ -20,7 +20,6 @@ export const MovieList = ({
 
   const filteredMovies = useMemo(() => {
     if (movies) {
-      console.log(movies);
       return movies.filter((movie) => {
         return movie?.name
           .toLowerCase()
@@ -53,34 +52,46 @@ export const MovieList = ({
     );
   }
 
-  if (!loading && !error) {
+  if (filteredMovies.length < 1) {
     content = (
+      <div className='flex flex-1 justify-center items-center'>
+        Mo movies matching the search criteria
+      </div>
+    );
+  }
+
+  if (!loading && !error && filteredMovies.length > 0) {
+    content = (
+      <div className='overflow-scroll flex mb-4'>
+        <div className='grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-5 gap-4 gap-y-6 pt-4'>
+          {filteredMovies.map((item, index) => (
+            <MovieCard
+              key={item.id}
+              image={item.iconUri}
+              title={item.name}
+              id={item.id}
+              onMovieSelect={() => onMovieSelect(item.id)}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className='flex flex-1'>
       <div className='pt-4 flex flex-1 flex-col'>
         <div className='flex items-center justify-between'>
           <input
-            className='bg-gray-800 p-2 rounded w-[20%] my-10'
+            className='bg-gray-800 p-2 rounded w-[50%] my-10'
             placeholder='Search movie...'
             type='text'
             onChange={handleSearch}
           />
           <div>Movies count: {`${filteredMovies.length}`}</div>
         </div>
-        <div className='overflow-scroll flex mb-4'>
-          <div className='grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-5 gap-4 gap-y-6 pt-4'>
-            {filteredMovies.map((item, index) => (
-              <MovieCard
-                key={item.id}
-                image={item.iconUri}
-                title={item.name}
-                id={item.id}
-                onMovieSelect={() => onMovieSelect(item.id)}
-              />
-            ))}
-          </div>
-        </div>
+        {content}
       </div>
-    );
-  }
-
-  return <div className='flex flex-1'>{content}</div>;
+    </div>
+  );
 };
