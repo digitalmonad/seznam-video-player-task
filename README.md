@@ -9,3 +9,5 @@ The app should:
 - [x] Nice to have: Playing of movies in video player, some of the clips can be DRM protected. No need to solve these, but mark them as unplayable.
 - [x] The focus is on working with API, parsing and sorting, not UI/UX.
 - [x] The result should be published on GitHub
+
+Set env variables in .env before launch (simply rename .env.example to .env)
