@@ -4,14 +4,13 @@ import { MovieList } from '../components/MovieList';
 import { Player } from '../components/Player';
 import React from 'react';
 import { v4 as uuid } from 'uuid';
-import { TMovie } from '../types';
+import { TMovie, TApiMovie } from '../types';
 
 const videoJsOptions = {
   autoplay: false,
   controls: true,
   responsive: true,
   fluid: true,
-  width: '20px',
 };
 
 const movieFetcher = () =>
@@ -19,7 +18,7 @@ const movieFetcher = () =>
     .then((res) => res.json())
     .then((movies) =>
       // Since API does not return movies with any unique id, we have to generate one ourselves
-      movies.map((movie: Omit<TMovie, 'id'>) => ({ ...movie, id: uuid() }))
+      movies.map((movie: TApiMovie) => ({ ...movie, id: uuid() }))
     );
 
 export const Root = () => {

@@ -5,7 +5,7 @@ export type TMovieCardProps = {
   onMovieSelect: () => void;
 };
 
-export const MovieCard = ({ image, title, onMovieSelect }: TMovieCardProps) => {
+export const Card = ({ image, title, onMovieSelect }: TMovieCardProps) => {
   return (
     <div
       onClick={() => onMovieSelect()}
